@@ -46,6 +46,11 @@ async def index (request: Request): # request - переменная, котор
     return templates.TemplateResponse("base.html", {"request": request}) #Верни HTML страницу, подставив в шаблон данные
 
 
+@app.post("/register", response_model=UserCreate)
+async def register(user: UserCreate, db: Session = Depends(get_db)):
+    new_user = UserCRUD.create_user(db, user)
+    return {"message": "User created", "user_id": new_user.id}
+
 #------
 #Прописать тут логин после регистрации. Внутри логина сделать проверку токена
 @app.post("/token")
@@ -56,6 +61,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+
+
+
 
 #------
 @app.get("/user/all", response_model=list[UserCreate])
@@ -69,17 +80,13 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.post("/register", response_model=UserCreate)
-async def register(user: UserCreate, db: Session = Depends(get_db)):
-    new_user = UserCRUD.create_user(db, user)
-    return {"message": "User created", "user_id": new_user.id}
-
-
 @app.delete("/user/delete/{user_id}")
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     if not user_id:
         raise HTTPException(status_code=400, detail="User ID is required")
     return UserCRUD.delete_user(db, user_id)
+
+#------
 
 
 if __name__ == "__main__":

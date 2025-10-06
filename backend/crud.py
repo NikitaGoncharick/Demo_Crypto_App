@@ -11,14 +11,23 @@ from auth import verify_token
 
 class UserCRUD:
 
-    # @staticmethod
-    # def get_user_by_token(db: Session, token: str):
-    #     try:
-    #         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    #         users = db.query(User).filter(User.username == payload["payload"]).first()
-    #         return users
-    #     except:
-    #         return HTTPException(status_code=401, detail="Invalid token")
+    @staticmethod
+
+    # ---------------
+    def authenticate_user(db: Session, username: str, password: str):
+        users = db.query(User).filter(User.username == username).first() # Проверка логина/пароля в БД
+        if users and users.password == password: # В реальности хэшировать!
+            return users
+        return None
+
+    @staticmethod
+    def get_user_by_token(db: Session, token: str): #обработка защищенного эндпоинта
+        playload = verify_token(token)
+        if not playload:
+            return None
+        return db.query(User).filter(User.id == playload.get("sub")).first()
+
+    #---------------
 
     @staticmethod
     def get_user(db: Session, user_id: int):
