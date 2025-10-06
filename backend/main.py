@@ -45,6 +45,8 @@ async def add_new_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = UserCRUD.create_user(db, user)
     return new_user
 
+#@app.put("/user/update/{user_id}")
+
 
 @app.delete("/user/delete/{user_id}")
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
