@@ -32,7 +32,7 @@ class Asset(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     portfolio_id = Column(Integer, ForeignKey("portfolio.id"))
-    sumbol = Column(String)
+    symbol = Column(String)
     quantity = Column(Float)
     portfolio = relationship("Portfolio", back_populates="assets")
 

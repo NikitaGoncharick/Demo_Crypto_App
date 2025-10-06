@@ -2,10 +2,24 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from sqlalchemy.testing.suite.test_reflection import users
+
 from models import User, Portfolio, Asset, Transaction
 from schemas import UserCreate, AddMoney, TradeAsset
+from auth import verify_token
+
 
 class UserCRUD:
+
+    # @staticmethod
+    # def get_user_by_token(db: Session, token: str):
+    #     try:
+    #         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    #         users = db.query(User).filter(User.username == payload["payload"]).first()
+    #         return users
+    #     except:
+    #         return HTTPException(status_code=401, detail="Invalid token")
+
     @staticmethod
     def get_user(db: Session, user_id: int):
         return db.query(User).filter(User.id == user_id).first()
