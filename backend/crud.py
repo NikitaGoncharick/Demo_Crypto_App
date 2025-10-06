@@ -15,9 +15,9 @@ class UserCRUD:
 
     # ---------------
     def authenticate_user(db: Session, username: str, password: str):
-        users = db.query(User).filter(User.username == username).first() # Проверка логина/пароля в БД
-        if users and users.password == password: # В реальности хэшировать!
-            return users
+        user = db.query(User).filter(User.username == username).first() # Проверка логина/пароля в БД
+        if user and user.password == password: # В реальности хэшировать!
+            return user
         return None
 
     @staticmethod
