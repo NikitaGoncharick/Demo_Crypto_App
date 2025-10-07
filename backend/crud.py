@@ -6,7 +6,7 @@ from sqlalchemy.testing.suite.test_reflection import users
 
 from models import User, Portfolio, Asset, Transaction
 from schemas import UserCreate, AddMoney, TradeAsset
-from auth import verify_token
+#from auth import verify_token
 
 
 class UserCRUD:
