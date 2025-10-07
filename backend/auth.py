@@ -18,3 +18,11 @@ def create_access_token(data: dict):
 #     except jwt.JWTError:
 #         return None
 
+def decode_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        return username
+    except Exception:
+        return None
+
