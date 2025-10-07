@@ -2,7 +2,7 @@
 from os import access
 
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException, Depends, Form
+from fastapi import FastAPI, Request, HTTPException, Depends, Form, Response #(Response для создания cookie)
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
 from fastapi.templating import Jinja2Templates #Превращает HTML-шаблоны в готовые HTML-страницы с подставленными данными.
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - Автоматически читает данные формы, Ожидает поля username и password
@@ -51,16 +51,15 @@ async def reg_page(request: Request):
 
 
 @app.post("/register")
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(user: UserCreate, response: Response, db: Session = Depends(get_db)):
+
     new_user = UserCRUD.create_user(db, user)
+    access_token = create_access_token(data={"sub": user.username}) #sub "субъект" - того, кому принадлежит токен.
 
-    access_token = create_access_token(data={"sub": user.username}) #sub -стандартное поле в JWT токене, которое означает "субъект" - того, кому принадлежит токен.
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60)#сохраняем ключ в куки
 
-    return {
-        "id": new_user.id,
-        "username": new_user.username,
-        "access_token": access_token,
-    }
+    return { "id": new_user.id, "username": new_user.username, "access_token": access_token }
+
 
 
 # @app.post("/login")
