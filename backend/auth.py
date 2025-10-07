@@ -9,6 +9,7 @@ def create_access_token(data: dict):
     to_encode = data.copy() # Создаем КОПИЮ данных, чтобы не испортить оригинал
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES) # Создаем время истечения
     to_encode.update({"exp":expire}) # exp - expiration time" (время истечения) | expire - перменная которая хранит значение expire
+
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) #Кодируем все в JWT токен
 
 # def verify_token(token: str):

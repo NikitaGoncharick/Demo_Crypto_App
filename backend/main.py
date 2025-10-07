@@ -1,5 +1,5 @@
-#🚀 FastAPI приложение и endpoints
-from os import access
+# FastAPI приложение и endpoints
+# Все что связано с HTTP (токены, куки, headers) - в эндпоинтах.
 
 import uvicorn
 from fastapi import FastAPI, Request, HTTPException, Depends, Form, Response #(Response для создания cookie)
@@ -7,7 +7,6 @@ from fastapi.responses import RedirectResponse #Чтобы перенаправ�
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
 from fastapi.templating import Jinja2Templates #Превращает HTML-шаблоны в готовые HTML-страницы с подставленными данными.
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - Автоматически читает данные формы, Ожидает поля username и password
-from jwt.exceptions import JWTException
 from starlette.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -53,35 +52,33 @@ async def reg_page(request: Request):
 async def register(user: UserCreate, response: Response, db: Session = Depends(get_db)):
 
     new_user = UserCRUD.create_user(db, user)
-    access_token = create_access_token(data={"sub": user.username}) #sub "субъект" - того, кому принадлежит токен.
 
-    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60)#сохраняем ключ в куки
+    # Создаем токен
+    access_token = create_access_token(data={"sub": user.username}) #sub "субъект" - того, кому принадлежит токен.
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
     return { "id": new_user.id, "username": new_user.username, "access_token": access_token }
 
-@app.post("/login")
-async def login_simple(usrname: str = Form(..., description="Username"),
-                       password: str = Form(..., description="Password"),
-                       db: Session = Depends(get_db)):
 
-    user = UserCRUD.simple_user_authenticate(db, usrname, password)
+@app.post("/login")
+async def login(response: Response,
+                form_data: OAuth2PasswordRequestForm = Depends(), #внутри уже настроены все поля
+                db: Session = Depends(get_db)
+                ):
+
+    user = UserCRUD.log_in_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
 
-    # # Создаем токен
-    # access_token = create_access_token(data={"sub": user.username})
-    # return {
-    #     "access_token": access_token,
-    #     "token_type": "bearer"
-    # }
+    # Создаем токен
+    access_token = create_access_token(data={"sub": user.username})
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
+    return { "id": user.id, "username": user.username, "userpass":user.password, "access_token": access_token }
 
 
 #------ Dependency для проверки токена
 async def check_auth (request: Request, db: Session = Depends(get_db)) -> bool: # request - переменная, которая будет содержать информацию о HTTP запросе #Request - класс из FastAPI, который описывает структуру HTTP запроса
-
     token = request.cookies.get("access_token") # Получаем токен из куки
-
     if not token: return False
-
     try:
         # Декодируем токен
         username = decode_token(token)
@@ -94,7 +91,6 @@ async def check_auth (request: Request, db: Session = Depends(get_db)) -> bool: 
             return False
 
         return True # ← возвращаем User объект
-
     # ВАЖНО: выбрасываем исключение, а не просто печатаем!
     except ExpiredSignatureError:
         return False

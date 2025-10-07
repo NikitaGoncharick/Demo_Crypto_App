@@ -11,15 +11,7 @@ from schemas import UserCreate, AddMoney, TradeAsset
 
 class UserCRUD:
 
-    @staticmethod
 
-    # ---------------
-    # def authenticate_user(db: Session, username: str, password: str):
-    #     user = db.query(User).filter(User.username == username).first() # Проверка логина/пароля в БД
-    #     if user and user.password == password: # В реальности хэшировать!
-    #         return user
-    #     return None
-    #
     # @staticmethod
     # def get_user_by_token(db: Session, token: str): #обработка защищенного эндпоинта
     #     playload = verify_token(token)
@@ -29,7 +21,7 @@ class UserCRUD:
 
     #---------------
     @staticmethod
-    def simple_user_authenticate(db: Session, username: str, password: str):
+    def log_in_user(db: Session, username: str, password: str):
         user = db.query(User).filter(User.username == username).first()
         if user and user.password == password:
             return user
