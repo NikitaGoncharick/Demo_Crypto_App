@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
 from fastapi.templating import Jinja2Templates #Превращает HTML-шаблоны в готовые HTML-страницы с подставленными данными.
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - для формы логина
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - Автоматически читает данные формы, Ожидает поля username и password
 from starlette.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -40,10 +40,15 @@ app.mount("/static", StaticFiles(directory="../frontend/css"), name="static") # 
 
 templates = Jinja2Templates(directory="../frontend/templates") # Настройка шаблонов
 #--------------
-@app.get("/")
+@app.get("/main")
 async def index (request: Request): # request - переменная, которая будет содержать информацию о HTTP запросе
                                     #Request - класс из FastAPI, который описывает структуру HTTP запроса
     return templates.TemplateResponse("base.html", {"request": request}) #Верни HTML страницу, подставив в шаблон данные
+
+
+@app.get("/reg")
+async def reg_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
 
 
 @app.post("/register", response_model=UserCreate)
@@ -51,21 +56,19 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     new_user = UserCRUD.create_user(db, user)
     return {"message": "User created", "user_id": new_user.id}
 
-#------
+#@app.post("/login", response_model=UserCreate)
+
+# #------
 #Прописать тут логин после регистрации. Внутри логина сделать проверку токена
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = UserCRUD.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
+    return user
 
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-
-
-
 
 
 #------
