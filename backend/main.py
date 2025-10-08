@@ -43,6 +43,7 @@ app.mount("/static", StaticFiles(directory="../frontend/css"), name="static") # 
 templates = Jinja2Templates(directory="../frontend/templates") # Настройка шаблонов
 
 
+
 @app.get("/reg_page")
 async def reg_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
