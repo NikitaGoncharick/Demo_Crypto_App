@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Demo Terminal</title>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
@@ -316,7 +318,8 @@
         <!-- Панель Под Формой Логина -->
         <div class="create-account">
             <small>
-                No account? <a href="#" class="form-create-data">Register</a>
+               No account? <a href="#" class="form-create-data" hx-get="/reg_page" hx-target="body" hx-push-url="true">Register</a>
+
             </small>
         </div>
 

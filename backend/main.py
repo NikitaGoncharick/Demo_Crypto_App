@@ -43,10 +43,17 @@ app.mount("/static", StaticFiles(directory="../frontend/css"), name="static") # 
 templates = Jinja2Templates(directory="../frontend/templates") # Настройка шаблонов
 
 
+@app.get("/")
+async def root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/reg_page")
 async def reg_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
+@app.get("/login_page")
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @app.post("/register")
@@ -130,7 +137,7 @@ async def index(request: Request, auth: bool = Depends(check_auth)):
    if auth:
         return templates.TemplateResponse("base.html",{"request": request})  # Верни HTML страницу, подставив в шаблон данные
 
-   return RedirectResponse(url="/reg_page")  # ← явно создаем редирект
+   return RedirectResponse(url="/login_page")  # ← явно создаем редирект
 
 
 if __name__ == "__main__":
