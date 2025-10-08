@@ -284,11 +284,14 @@
     </style>
 </head>
 <body class="crt">
-    <div class="vhs-frame"></div>
+   <!-- <div class="vhs-frame"></div> -->
     <div class="vhs-effect"></div>
     <div class="noise"></div>
+    <div id="matrixRain"></div>
 
+     <!-- Контейнер со всеми визуальными элементами -->
     <div class="container">
+
         <!-- Верхняя часть -->
         <div class="header">
             <div class="version">Version 1.3</div>
@@ -308,16 +311,14 @@
                 <input type="password" class="form-input" placeholder="••••••••">
             </div>
             <button class="login-btn">Authenticate</button>
-
         </div>
 
+        <!-- Панель Под Формой Логина -->
         <div class="create-account">
             <small>
                 No account? <a href="#" class="form-create-data">Register</a>
             </small>
         </div>
-
-
 
         <!-- Нижняя часть -->
         <div class="footer">
@@ -349,10 +350,12 @@
             }
 
             function draw() {
-                ctx.fillStyle = "rgba(0, 16, 0, 0.04)";
+                // Полупрозрачный фон для шлейфа
+                ctx.fillStyle = "rgba(0, 16, 0, 0.04)";  // ← прозрачность 4%
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = "#00FF00";
+                // Прозрачность зеленого текста
+                ctx.fillStyle = "rgba(0,255,0,0.14)";
                 ctx.font = font_size + "px 'Share Tech Mono'";
 
                 for(let i = 0; i < rainDrops.length; i++) {
