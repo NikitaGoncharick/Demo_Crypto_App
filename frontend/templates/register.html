@@ -40,7 +40,7 @@
             50% { opacity: 1; }
         }
 
-        /* CRT эффект */
+        /* CRT эффект - Бегущие сверху-вниз линии */
         .crt::before {
             content: " ";
             display: block;
@@ -56,6 +56,7 @@
             animation: scanline 8s linear infinite;
         }
 
+        /* АНИМАЦИЯ ДЛЯ animation: scanline...   */
         @keyframes scanline {
             0% { background-position: 0 0; }
             100% { background-position: 0 100%; }

@@ -26,6 +26,29 @@
             position: relative;
         }
 
+        /* CRT эффект - Бегущие сверху-вниз линии */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 8px; /* Толщина линий */
+            z-index: 2; /*  Эффект находится поверх фона, но под контентом (z-index: 3) */
+            pointer-events: none;
+            animation: scanline 8s linear infinite; /* Скорость */
+        }
+
+        /* АНИМАЦИЯ ДЛЯ animation: scanline...   */
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+
         /* VHS эффект - ДОБАВЛЕНА АНИМАЦИЯ */
         .vhs-effect {
             position: fixed;
@@ -46,31 +69,12 @@
             animation: vhs-flicker 0.1s infinite;
         }
 
-        /* ДОБАВЛЕНА АНИМАЦИЯ ДЛЯ VHS ЭФФЕКТА */
+        /* АНИМАЦИЯ ДЛЯ VHS ЭФФЕКТА */
         @keyframes vhs-flicker {
             0%, 100% { opacity: 0.9; }
             50% { opacity: 1; }
         }
 
-        /* CRT эффект */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15) 0px,
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.3;
-        }
 
         /* Эффект мерцания */
         @keyframes flicker {
@@ -382,8 +386,8 @@
         }
     </style>
 </head>
-<body>
-    <!-- ДОБАВЛЕНЫ ЭФФЕКТЫ В HTML -->
+<body class="crt">
+    <!-- ТОЧКА ВЫЗОВОВ ЭФФЕКТОВ -->
     <div class="vhs-effect"></div>
     <div class="noise"></div>
 
