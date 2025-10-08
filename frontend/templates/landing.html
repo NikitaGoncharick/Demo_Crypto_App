@@ -156,11 +156,11 @@
         .login-form::before { /* Код который создает бегущую линию */
             content: ''; /* создает пустой псевдоэлемент */
             position: absolute;
-            top: 0;
+            top: -1px;
             left: -100%; /*  начинается слева за пределами формы */
             width: 100%; /*  заканчивается справа за пределами формы */
             height: 1px;
-            background: linear-gradient(90deg, transparent, #00ff00, transparent); /*  плавно появляется и исчезает */
+            background: linear-gradient(90deg, transparent, #00ff00, transparent); /*  линия плавно появляется и исчезает */
             animation: scan 3s linear infinite; /*  бесконечно повторяется каждые 3 секунды */
         }
 
