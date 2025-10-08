@@ -3,126 +3,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Dashboard</title>
+    <title>Crypto Terminal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
+        :root {
+            --primary-bg: #001100;
+            --secondary-bg: rgba(0, 20, 0, 0.8);
+            --accent-color: #00ff00;
+            --accent-secondary: #0088ff;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --border-color: #1f591f;
+            --danger: #ff3366;
+            --warning: #ffcc00;
         }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* VHS эффект - ДОБАВЛЕНА АНИМАЦИЯ */
+        .vhs-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.03) 0px,
+                    rgba(0, 255, 0, 0.03) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 1;
+            animation: vhs-flicker 0.1s infinite;
+        }
+
+        /* ДОБАВЛЕНА АНИМАЦИЯ ДЛЯ VHS ЭФФЕКТА */
+        @keyframes vhs-flicker {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        /* CRT эффект */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+        }
+
+        /* Эффект мерцания */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.98; }
+            15% { opacity: 0.92; }
+            20% { opacity: 0.99; }
+            50% { opacity: 0.94; }
+            100% { opacity: 0.97; }
+        }
+
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            animation: flicker 5s infinite;
+            position: relative;
+            z-index: 2; /* УВЕЛИЧЕН z-index чтобы был поверх эффектов */
         }
+
         .dashboard-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--secondary-bg);
+            border-radius: 4px;
+            border: 1px solid #00ff00;
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid #e9ecef;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 3; /* УВЕЛИЧЕН z-index */
         }
+
+        .dashboard-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+        }
+
         .section-title {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #2c3e50;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
+
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
+
         .portfolio-item {
             padding: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
+            border-radius: 4px;
+            background: linear-gradient(135deg, rgba(0, 20, 0, 0.8), rgba(0, 5, 0, 0.8));
+            border: 1px solid var(--border-color);
+            color: #00ff00;
         }
+
         .portfolio-item.main {
             grid-column: 1 / -1;
-            background-color: #e8f4fd;
-            border-left: 4px solid #007bff;
+            background: linear-gradient(135deg, rgba(0, 20, 0, 0.8), rgba(0, 5, 0, 0.8));
+            border-left: 4px solid var(--accent-color);
         }
+
         .value-large {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
         }
+
         .value-medium {
             font-size: 1.3rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--text-primary);
         }
+
         .label {
             font-size: 0.9rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .positive {
-            color: #28a745;
+            color: var(--accent-color);
         }
+
         .negative {
-            color: #dc3545;
+            color: var(--danger);
         }
+
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .btn-action {
             padding: 12px;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
+        .btn-action:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            color: var(--primary-bg);
+            border: none;
+        }
+
+        .btn-outline-danger {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-outline-danger:hover {
+            background: var(--danger);
+            color: var(--primary-bg);
+        }
+
+        .btn-outline-primary {
+            color: var(--accent-secondary);
+            border-color: var(--accent-secondary);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--accent-secondary);
+            color: var(--primary-bg);
+        }
+
         .assets-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .assets-table th {
-            background-color: #f8f9fa;
+            background-color: rgba(10, 10, 18, 0.7);
             padding: 12px 8px;
             text-align: left;
             font-weight: 600;
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
             font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .assets-table td {
             padding: 12px 8px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
+
         .assets-table tr:hover {
-            background-color: #f8f9fa;
+            background-color: rgba(0, 255, 157, 0.05);
         }
+
         .symbol {
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--accent-color);
         }
+
         .logout-btn {
             background: none;
             border: none;
-            color: #6c757d;
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 0.9rem;
             padding: 5px 0;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .logout-btn:hover {
-            color: #495057;
+            color: var(--accent-color);
+        }
+
+        /* Стили для модального окна */
+        .modal-content {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            color: var(--accent-color);
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .form-control {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 4px;
+        }
+
+        .form-control:focus {
+            background: var(--primary-bg);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 157, 0.25);
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+        }
+
+        /* Заголовок в стиле референса */
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-title {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .terminal-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: -5px;
+        }
+
+        /* Эффект загрузки как в референсе */
+        .loading-bar {
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+            width: 100%;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: loading 2s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* ДОБАВЛЕН ЭФФЕКТ ШУМА */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
+    <!-- ДОБАВЛЕНЫ ЭФФЕКТЫ В HTML -->
+    <div class="vhs-effect"></div>
+    <div class="noise"></div>
+
     <div class="dashboard-container">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0">Trading Dashboard</h1>
-            <button class="logout-btn">Logout</button>
+        <!-- Заголовок в стиле референса -->
+        <div class="terminal-header">
+            <div>
+                <div class="terminal-title">Crypto Terminal</div>
+                <div class="terminal-subtitle">You are being monitored for (y)our safety.</div>
+                <div class="loading-bar"></div>
+            </div>
+            <div class="text-end">
+                <div class="terminal-subtitle">#INDCws34</div>
+                <div class="terminal-subtitle">アメリカ製1984</div>
+                <button class="logout-btn">Logout</button>
+            </div>
         </div>
 
-        <!-- Portfolio Overview -->
+        <!-- Обзор портфеля -->
         <div class="dashboard-card">
             <h2 class="section-title">Portfolio Overview</h2>
 
@@ -146,18 +426,16 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Кнопки действий -->
         <div class="dashboard-card">
             <div class="actions-grid">
-
                 <button class="btn btn-primary btn-action" data-bs-toggle="modal" data-bs-target="#buyModal">Buy Asset</button>
-
                 <button class="btn btn-outline-danger btn-action">Sell Asset</button>
                 <button class="btn btn-outline-primary btn-action">Add Money</button>
             </div>
         </div>
 
-        <!-- МОДАЛЬНОЕ ОКНО -->
+        <!-- Модальное окно покупки -->
         <div class="modal fade" id="buyModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -169,7 +447,7 @@
                         <form id="buyForm">
                             <div class="mb-3">
                                 <label class="form-label">Symbol</label>
-                                <input type="text" class="form-control" placeholder="e.g. AAPL" required>
+                                <input type="text" class="form-control" placeholder="e.g. BTC, ETH" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Quantity</label>
@@ -185,9 +463,7 @@
             </div>
         </div>
 
-
-
-        <!-- Your Assets -->
+        <!-- Активы -->
         <div class="dashboard-card">
             <h2 class="section-title">Your Assets</h2>
 
@@ -219,12 +495,27 @@
                         <td class="negative">-$4,850.46</td>
                         <td class="negative">-65.17%</td>
                     </tr>
+                    <tr>
+                        <td class="symbol">SOL</td>
+                        <td>5.2</td>
+                        <td>$142.36</td>
+                        <td>$740.27</td>
+                        <td class="positive">+$120.45</td>
+                        <td class="positive">+19.45%</td>
+                    </tr>
+                    <tr>
+                        <td class="symbol">ADA</td>
+                        <td>120</td>
+                        <td>$0.48</td>
+                        <td>$57.60</td>
+                        <td class="negative">-$12.40</td>
+                        <td class="negative">-17.72%</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
