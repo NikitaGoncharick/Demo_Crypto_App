@@ -11,22 +11,12 @@ from schemas import UserCreate, AddMoney, TradeAsset
 
 class UserCRUD:
 
-
-    # @staticmethod
-    # def get_user_by_token(db: Session, token: str): #обработка защищенного эндпоинта
-    #     playload = verify_token(token)
-    #     if not playload:
-    #         return None
-    #     return db.query(User).filter(User.id == playload.get("sub")).first()
-
-    #---------------
     @staticmethod
     def log_in_user(db: Session, username: str, password: str):
         user = db.query(User).filter(User.username == username).first()
         if user and user.password == password:
             return user
         return None
-
 
     @staticmethod
     def get_user(db: Session, user_id: int):
@@ -48,8 +38,6 @@ class UserCRUD:
     @staticmethod
     def get_all_users(db: Session):
         return db.query(User).all()
-
-
 
     @staticmethod
     def create_user(db: Session, user: UserCreate):
@@ -78,6 +66,27 @@ class UserCRUD:
 
         return new_user
 
+
+
+class PortfolioCRUD:
+
+    @staticmethod
+    def get_portfolio_by_userd_id(db: Session, user_id: int):
+        return db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+
+    @staticmethod
+    def get_user_portfolio_data(db: Session, user_id: int):
+        """Получаем все данные портфеля пользователя"""
+        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+        if not portfolio:
+            return None
+
+        """Получаем активы пользователя"""
+        assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()
+        return {
+            "portfolio": portfolio,
+            "assets": assets
+        }
 
 
 

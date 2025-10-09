@@ -16,7 +16,7 @@ from jose import jwt, ExpiredSignatureError
 from database import get_db, engine
 from models import Base, User
 from schemas import UserCreate
-from crud import UserCRUD
+from crud import UserCRUD, PortfolioCRUD
 from crypto_service import get_crypto_price
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from auth import create_access_token, decode_token
@@ -84,26 +84,25 @@ async def login(response: Response,
 
 
 #------ Dependency для проверки токена
-async def check_auth (request: Request, db: Session = Depends(get_db)) -> bool: # request - переменная, которая будет содержать информацию о HTTP запросе #Request - класс из FastAPI, который описывает структуру HTTP запроса
+async def check_auth (request: Request, db: Session = Depends(get_db)) -> User: # request - переменная, которая будет содержать информацию о HTTP запросе #Request - класс из FastAPI, который описывает структуру HTTP запроса
     token = request.cookies.get("access_token") # Получаем токен из куки
-    if not token: return False
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        # Декодируем токен
-        username = decode_token(token)
+        username = decode_token(token) # Декодируем токен
         if username is None:
-            return False
+            raise HTTPException(status_code=401, detail="Invalid token")
 
         # Ищем пользователя в БД
         user = db.query(User).filter(User.username == username).first()
         if user is None:
-            return False
+            raise HTTPException(status_code=401, detail="User not found")
 
-        return True # ← возвращаем User объект
+        return user # ← возвращаем User объект
+
     # ВАЖНО: выбрасываем исключение, а не просто печатаем!
     except ExpiredSignatureError:
-        return False
-    except Exception as e:
-        return False
+        raise HTTPException(status_code=401, detail="Token expired")
 #------
 @app.get("/crypto/{symbol}")
 async def get_crypto_data(symbol: str, db: Session = Depends(get_db)):
@@ -132,12 +131,24 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 
 # --- Защищенные эндпоинты ----
-@app.get("/main")
-async def index(request: Request, auth: bool = Depends(check_auth)):
-   if auth:
-        return templates.TemplateResponse("base.html",{"request": request})  # Верни HTML страницу, подставив в шаблон данные
+@app.get("/user-profile")
+async def user_profile(request: Request, current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
 
-   return RedirectResponse(url="/login_page")  # ← явно создаем редирект
+    if current_user:
+        return templates.TemplateResponse("user-profile.html", {"request": request, "user": current_user})
+    else:
+        return RedirectResponse(url="/login_page")
+
+
+# ---------- Обработчик ошибок ----------
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    if exc.status_code == 401:
+        return RedirectResponse(url="/login_page")
+    return RedirectResponse(url="/login_page")  #если код ошибки другой (например 404 или 500) →
+# ---------- Обработчик ошибок ----------
+
+
 
 
 if __name__ == "__main__":
