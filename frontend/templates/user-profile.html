@@ -574,30 +574,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-
+                     <!-- method="post" - отправляй данные как письмо | action="/api/add_money" - адрес | enctype - упаковывай данные в специальный формат -->
                     <form id="addMoneyForm" method="post" action="/api/add_money" enctype="application/x-www-form-urlencoded">
 
                         <div class="mb-3">
                             <label class="form-label">Amount ($)</label>
+                            <!-- name="amount" = Конверт: { amount: 100 } -->
                             <input type="number" class="form-control" name="amount" placeholder="0.00" step="0.01" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
-
-                            <select class="form-control"  id="paymentMethod" required>
-
+                            <select class="form-control"  id="paymentMethod" required> <!-- id = "паспорт" элемента для JavaScript/CSS -->
                                 <option value="">Select method...</option>
                                 <option value="card">Credit Card</option>
                                 <option value="crypto">Crypto Transfer</option>
                                 <option value="bank">Bank Transfer</option>
                             </select>
                         </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" form="addMoneyForm" class="btn btn-primary">Add Funds</button>
+                    <button type="submit" form="addMoneyForm" class="btn btn-primary">Add Funds</button>  <!-- ⚠️️submit собирает все данные формы addMoneyForm и отправляет запрос в /api/add_money, используя формат enctype="appl...⚠️ -->
                 </div>
             </div>
         </div>
