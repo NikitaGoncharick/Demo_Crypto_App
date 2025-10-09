@@ -66,12 +66,11 @@ async def register(response: Response, username: str = Form(...), password: str 
         print("User already exists")
         return RedirectResponse(url="/reg_page?error=user_exists", status_code=303)
 
-    access_token = create_access_token(data={"sub": user_data.username}) # Создаем токен | sub "субъект" - того, кому принадлежит токен.
 
+    access_token = create_access_token(data={"sub": user_data.username}) # Создаем токен | sub "субъект" - того, кому принадлежит токен.
     redirect = RedirectResponse(url="/user-profile", status_code=303)  # 1. Создаем "пустой" редирект
     redirect.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
 
-    print("Registration successful")
     return redirect
 
 

@@ -41,8 +41,11 @@ class UserCRUD:
 
     @staticmethod
     def create_user(db: Session, user: UserCreate):
-        if UserCRUD.get_user_by_email(db, user.email): # Проверяем существует ли пользователь
-            raise HTTPException(status_code=400, detail="User already exists")
+
+        existing_user = db.query(User).filter(User.email == user.email).first()
+        if existing_user:
+            print("User already exists")
+            return None
 
         # Создаем пользователя
         new_user = User(
@@ -63,7 +66,7 @@ class UserCRUD:
         db.add(new_portfolio)
         db.commit()
 
-
+        print("User created successfully")
         return new_user
 
 

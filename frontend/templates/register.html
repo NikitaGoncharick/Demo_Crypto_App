@@ -271,6 +271,18 @@
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
         }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body class="crt">
@@ -289,6 +301,11 @@
 
         <!-- Форма РЕГИСТРАЦИИ -->
         <div class="login-form">
+                <!--  Блок Вывода Ошибки регистрации-->
+             {% if request.query_params.get('error') %}
+            <div class="error-message">⚠️ Registration failed!</div>
+            {% endif %}
+
             <form METHOD="POST" action="/register" > <!-- ⚠️ формируем контейнер с данными -->
 
             <div class="form-group">
@@ -307,6 +324,7 @@
 
             </form>
         </div>
+
          <!--  -->
         <div class="create-account">
             <small>
