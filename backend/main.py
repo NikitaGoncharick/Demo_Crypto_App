@@ -148,10 +148,30 @@ async def user_profile(request: Request, current_user: User = Depends(check_auth
                               })
 
 # --- API endpoint приема данных ----
-# api/ = здесь живут endpoints для данных
+# api/ = здесь живут endpoints для данных ( user не увидит отображения названия )
 # Отдельный адрес на сервере для приема данных
 # Наше модальное окно должно отправлять данные на КОНКРЕТНЫЙ адрес, который знает как: Принять сумму денег. Обновить базу данных. Вернуть ответ
 # Без endpoint'а форма будет пытаться отправить данные на текущую страницу, которая не умеет обрабатывать добавление денег.
+
+@app.post("/api/add_money")
+async def add_money(request:Request, amount: float = Form(...), current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
+    try:
+        # 1. Обновляем деньги в базе
+        portfolio_operation = PortfolioCRUD.add_money_to_portfolio(db, current_user.id, amount)
+
+        if portfolio_operation:
+            # 2. Возвращаем ответ в формате JSON
+            return JSONResponse(
+                content={"status": True, "new_balance": portfolio_operation.total_added_money, "message": "Success Operation"})
+        else:
+            return JSONResponse(
+                content={"status": False, "message": "Error Operation"})
+
+
+    except Exception as e:
+        return JSONResponse(
+            content={"status": False, "message": str(e)})
+
 
 
 

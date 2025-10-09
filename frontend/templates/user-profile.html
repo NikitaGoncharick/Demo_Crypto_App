@@ -574,14 +574,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addMoneyForm">
+
+                    <form id="addMoneyForm" method="post" action="/api/add_money" enctype="application/x-www-form-urlencoded">
+
                         <div class="mb-3">
                             <label class="form-label">Amount ($)</label>
-                            <input type="number" class="form-control" placeholder="0.00" step="0.01" required>
+                            <input type="number" class="form-control" name="amount" placeholder="0.00" step="0.01" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
-                            <select class="form-control" required>
+
+                            <select class="form-control"  id="paymentMethod" required>
+
                                 <option value="">Select method...</option>
                                 <option value="card">Credit Card</option>
                                 <option value="crypto">Crypto Transfer</option>
