@@ -15,6 +15,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     portfolio = relationship("Portfolio", back_populates="user")
 
+
 class Portfolio(Base):
     __tablename__ = "portfolio"
 
@@ -26,6 +27,20 @@ class Portfolio(Base):
     user = relationship("User", back_populates="portfolio")
     assets = relationship("Asset", back_populates="portfolio")
     transactions = relationship("Transaction", back_populates="portfolio")
+
+    #---Прописываем методы внутри модели (самый правильный подход)
+    @property #декоратор, который превращает метод в атрибут (свойство).
+    def total_value_display(self):
+        return f"{self.available_money:.2f}" #Отформатированное значение для отображения
+
+    @property
+    def get_display_data(self):
+        return {
+            'avaliable_money': f"{self.available_money:.2f}",
+            'total_added_money': f"{self.total_added_money:.2f}",
+            'user_id': f"{self.user_id}"
+        }
+    #---
 
 class Asset(Base):
     __tablename__ = "assets"

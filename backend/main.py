@@ -4,6 +4,7 @@
 import uvicorn
 from fastapi import FastAPI, Request, HTTPException, Depends, Form, Response #(Response для создания cookie)
 from fastapi.responses import RedirectResponse #Чтобы перенаправлять на другую страницу вместо выброса ошибки
+from fastapi.responses import JSONResponse #"упаковка" ответа в понятный для JavaScript формат
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
 from fastapi.templating import Jinja2Templates #Превращает HTML-шаблоны в готовые HTML-страницы с подставленными данными.
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - Автоматически читает данные формы, Ожидает поля username и password
@@ -134,10 +135,24 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 @app.get("/user-profile")
 async def user_profile(request: Request, current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
 
-    if current_user:
-        return templates.TemplateResponse("user-profile.html", {"request": request, "user": current_user})
-    else:
-        return RedirectResponse(url="/login_page")
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    portfolio_data = PortfolioCRUD.get_user_portfolio_data(db, current_user.id)
+
+    return templates.TemplateResponse(
+        "user-profile.html", {"request": request,
+                              "portfolio": portfolio_data["portfolio"], #объект портфеля пользователя, т.к принимаем return {"portfolio": portfolio,"assets": assets}
+                              "assets": portfolio_data["assets"],
+                              "user": current_user
+                              })
+
+# --- API endpoint приема данных ----
+# api/ = здесь живут endpoints для данных
+# Отдельный адрес на сервере для приема данных
+# Наше модальное окно должно отправлять данные на КОНКРЕТНЫЙ адрес, который знает как: Принять сумму денег. Обновить базу данных. Вернуть ответ
+# Без endpoint'а форма будет пытаться отправить данные на текущую страницу, которая не умеет обрабатывать добавление денег.
+
 
 
 # ---------- Обработчик ошибок ----------

@@ -76,17 +76,30 @@ class PortfolioCRUD:
 
     @staticmethod
     def get_user_portfolio_data(db: Session, user_id: int):
-        """Получаем все данные портфеля пользователя"""
-        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+
+        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first() #из таблицы portfolio Отфильтруй только те записи, где user_id равен переданному user_id
         if not portfolio:
             return None
 
-        """Получаем активы пользователя"""
-        assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()
+        assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()  #Отфильтруй активы, которые принадлежат найденному портфелю
         return {
             "portfolio": portfolio,
             "assets": assets
         }
 
+    @staticmethod
+    def add_money_to_portfolio(db: Session, user_id: int, amount: float):
+
+        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+        if not portfolio:
+            return None
+
+        portfolio.total_added_money += amount
+        portfolio.available_money += amount
+
+        db.commit()
+        db.refresh(portfolio)
+
+        return portfolio
 
 
