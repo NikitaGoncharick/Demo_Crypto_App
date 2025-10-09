@@ -47,16 +47,14 @@ templates = Jinja2Templates(directory="../frontend/templates") # Настрой�
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
-
-@app.get("/reg_page")
-async def reg_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
-
 @app.get("/login_page")
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
+@app.get("/reg_page")
+async def reg_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
 @app.post("/register")
 async def register(user: UserCreate, response: Response, db: Session = Depends(get_db)):
 
@@ -76,12 +74,15 @@ async def login(response: Response,
 
     user = UserCRUD.log_in_user(db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
+        return RedirectResponse(url="/login_page?error=auth_failed", status_code=303)
 
     # Создаем токен
     access_token = create_access_token(data={"sub": user.username})
-    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
-    return { "id": user.id, "username": user.username, "userpass":user.password, "access_token": access_token }
+
+    redirect = RedirectResponse(url="/user-profile", status_code=303) # 1. Создаем "пустой" редирект
+    redirect.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60)  #подготавливаем куки
+
+    return redirect #Браузер получает ОДИН ответ с двумя инструкциями: редирект + куки
 
 
 #------ Dependency для проверки токена
@@ -160,17 +161,14 @@ async def add_money(request:Request, amount: float = Form(...), current_user: Us
         portfolio_operation = PortfolioCRUD.add_money_to_portfolio(db, current_user.id, amount)
 
         if portfolio_operation:
-            # 2. Возвращаем ответ в формате JSON
-            return JSONResponse(
-                content={"status": True, "new_balance": portfolio_operation.total_added_money, "message": "Success Operation"})
+            # ПРОСТО ПЕРЕНАПРАВЛЯЕМ на страницу профиля
+            return RedirectResponse(url="/user-profile", status_code=303)
         else:
-            return JSONResponse(
-                content={"status": False, "message": "Error Operation"})
+            return RedirectResponse(url="/user-profile", status_code=303)
 
 
     except Exception as e:
-        return JSONResponse(
-            content={"status": False, "message": str(e)})
+        return RedirectResponse(url=f"/user-profile?error={str(e)}", status_code=303)
 
 
 
