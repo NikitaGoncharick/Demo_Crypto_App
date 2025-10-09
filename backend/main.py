@@ -153,7 +153,7 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 async def user_profile(request: Request, current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
 
     if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        return RedirectResponse(url="/", status_code=303)
 
     portfolio_data = PortfolioCRUD.get_user_portfolio_data(db, current_user.id)
 
@@ -192,8 +192,8 @@ async def add_money(request:Request, amount: float = Form(...), current_user: Us
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     if exc.status_code == 401:
-        return RedirectResponse(url="/login_page")
-    return RedirectResponse(url="/login_page")  #если код ошибки другой (например 404 или 500) →
+        return RedirectResponse(url="/")
+    return RedirectResponse(url="/")  #если код ошибки другой (например 404 или 500) →
 # ----------
 
 
