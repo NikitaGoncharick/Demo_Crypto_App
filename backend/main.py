@@ -82,7 +82,7 @@ async def login(response: Response, #для передачи данных с с�
 
     user = UserCRUD.log_in_user(db, form_data.username, form_data.password)
     if not user:
-        return RedirectResponse(url="/login_page?error=auth_failed", status_code=303)
+        return RedirectResponse(url="/?error=auth_failed", status_code=303)
 
     # Создаем токен
     access_token = create_access_token(data={"sub": user.username})
@@ -92,6 +92,14 @@ async def login(response: Response, #для передачи данных с с�
 
     return redirect #Браузер получает ОДИН ответ с двумя инструкциями: редирект + куки
 
+
+
+@app.post("/logout")
+def logout():
+    redirect = RedirectResponse(url="/", status_code=303)
+    redirect.delete_cookie(key="access_token") # ⬅️ удаляем куки
+    print("User logged out")
+    return redirect
 
 #------ Dependency для проверки токена
 async def check_auth (request: Request, db: Session = Depends(get_db)) -> User: # request - переменная, которая будет содержать информацию о HTTP запросе #Request - класс из FastAPI, который описывает структуру HTTP запроса

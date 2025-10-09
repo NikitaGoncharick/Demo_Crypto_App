@@ -176,6 +176,17 @@
             background: linear-gradient(90deg, transparent, #00ff00, transparent); /*  линия плавно появляется и исчезает */
             animation: scan 3s linear infinite; /*  бесконечно повторяется каждые 3 секунды */
         }
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
         @keyframes scan {
             0% { left: -100%; }
@@ -304,6 +315,12 @@
 
         <!-- Форма логина -->
         <div class="login-form">
+
+             <!--  Блок Вывода Ошибки регистрации-->
+             {% if request.query_params.get('error') %}
+            <div class="error-message">⚠️ Authentication failed!</div>
+            {% endif %}
+
             <form method="post" action="/login">  <!-- ⚠️ формируем контейнер с данными -->
 
             <div class="form-group">

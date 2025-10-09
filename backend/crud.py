@@ -45,7 +45,7 @@ class UserCRUD:
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user:
             print("User already exists")
-            return None
+            return None # <- используем None для обработки eturn RedirectResponse в основном коде
 
         # Создаем пользователя
         new_user = User(
