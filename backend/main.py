@@ -47,27 +47,36 @@ templates = Jinja2Templates(directory="../frontend/templates") # Настрой�
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
-@app.get("/login_page")
-async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
 
 @app.get("/reg_page")
 async def reg_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 @app.post("/register")
-async def register(user: UserCreate, response: Response, db: Session = Depends(get_db)):
+async def register(response: Response, username: str = Form(...), password: str = Form(...), email: str = Form(...), db: Session = Depends(get_db)):
 
-    new_user = UserCRUD.create_user(db, user)
+    # Валидируем через Pydantic
+    try:
+        user_data = UserCreate(username=username, password=password, email=email)
+    except ValueError as e:
+        return RedirectResponse(url="/reg_page?error=validation_failed", status_code=303)
 
-    # Создаем токен
-    access_token = create_access_token(data={"sub": user.username}) #sub "субъект" - того, кому принадлежит токен.
-    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
-    return { "id": new_user.id, "username": new_user.username, "access_token": access_token }
+    new_user = UserCRUD.create_user(db, user_data)
+
+    if not new_user:
+        print("User already exists")
+        return RedirectResponse(url="/reg_page?error=user_exists", status_code=303)
+
+    access_token = create_access_token(data={"sub": user_data.username}) # Создаем токен | sub "субъект" - того, кому принадлежит токен.
+
+    redirect = RedirectResponse(url="/user-profile", status_code=303)  # 1. Создаем "пустой" редирект
+    redirect.set_cookie(key="access_token", value=access_token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60) #сохраняем ключ в куки браузера
+
+    print("Registration successful")
+    return redirect
 
 
 @app.post("/login")
-async def login(response: Response,
+async def login(response: Response, #для передачи данных с сервера в браузер
                 form_data: OAuth2PasswordRequestForm = Depends(), #внутри уже настроены все поля
                 db: Session = Depends(get_db)
                 ):
@@ -166,7 +175,6 @@ async def add_money(request:Request, amount: float = Form(...), current_user: Us
         else:
             return RedirectResponse(url="/user-profile", status_code=303)
 
-
     except Exception as e:
         return RedirectResponse(url=f"/user-profile?error={str(e)}", status_code=303)
 
@@ -179,7 +187,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     if exc.status_code == 401:
         return RedirectResponse(url="/login_page")
     return RedirectResponse(url="/login_page")  #если код ошибки другой (например 404 или 500) →
-# ---------- Обработчик ошибок ----------
+# ----------
 
 
 

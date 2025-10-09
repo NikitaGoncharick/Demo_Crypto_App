@@ -287,24 +287,27 @@
             <div class="japanese-text">暗号化セキュリティシステム</div>
         </div>
 
-        <!-- Форма логина -->
+        <!-- Форма РЕГИСТРАЦИИ -->
         <div class="login-form">
+            <form METHOD="POST" action="/register" > <!-- ⚠️ формируем контейнер с данными -->
+
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input type="text" class="form-input" placeholder="Email_address">
+                <input type="text" class="form-input" name="email" placeholder="Email_address" required> <!-- ⚠️ -->
             </div>
             <div class="form-group">
                 <label class="form-label">Login</label>
-                <input type="text" class="form-input" placeholder="Create_a_username">
+                <input type="text" class="form-input" name="username" placeholder="Create_a_username" required> <!-- ⚠️ -->
             </div>
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" placeholder="Create_a_password">
+                <input type="password" class="form-input" name="password" placeholder="Create_a_password" required> <!-- ⚠️ -->
             </div>
-            <button class="login-btn">Create an Account</button>
+            <button type="submit" class="login-btn">Create an Account</button> <!-- ⚠️ -->
 
+            </form>
         </div>
-
+         <!--  -->
         <div class="create-account">
             <small>
                 Already have an account? <a href="#" class="form-create-data" hx-get="/login_page" hx-target="body" hx-push-url="true">Login</a>
