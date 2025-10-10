@@ -85,9 +85,31 @@ class PortfolioCRUD:
             return None
 
         assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()  #Отфильтруй активы, которые принадлежат найденному портфелю
+
+        # Создаем список активов с дополнительными данными
+        asset_with_data = []
+        for asset in assets:
+            symbol = asset.symbol
+            quantity = asset.quantity
+            current_price = 12
+            total_value = asset.quantity * current_price
+            performance_usd = 999
+            performance_percent = 888
+
+            asset_with_data.append({
+                "symbol": symbol,
+                "quantity": quantity,
+                "current_price": current_price,
+                "total_value": total_value,
+                "performance_usd": performance_usd,
+                "performance_percent": performance_percent
+
+            })
+
+
         return {
             "portfolio": portfolio,
-            "assets": assets
+            "assets": asset_with_data
         }
 
     @staticmethod
@@ -121,8 +143,10 @@ class PortfolioCRUD:
         existing_asset = db.query(Asset).filter(Asset.portfolio_id == portfolio.id, Asset.symbol == symbol).first()
 
         if existing_asset:
+            print("Asset already exists")
             existing_asset.quantity += quantity
         else:
+            print("Creating new asset")
             new_asset = Asset(
                 portfolio_id=portfolio.id,
                 symbol=symbol,
@@ -144,8 +168,8 @@ class PortfolioCRUD:
         #     )
         # db.add(transaction)
         db.commit()
+        db.refresh(portfolio)
 
-        print("Asset bought successfully")
         return {"message": "Asset bought successfully"}
 
 

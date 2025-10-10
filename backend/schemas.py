@@ -1,4 +1,4 @@
-#Формат данных для API (Pydantic)
+#Формат аутентификации данных для API (Pydantic)
 from pydantic import BaseModel
 
 class UserCreate(BaseModel):

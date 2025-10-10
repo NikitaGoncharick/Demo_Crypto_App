@@ -481,7 +481,7 @@
             <div class="portfolio-grid">
                 <div class="portfolio-item main">
                     <div class="label">Total Value</div>
-                    <div class="value-large" id="total-value">{{ portfolio.get_display_data.total_added_money }}</div>
+                    <div class="value-large" id="total-value">none</div>
                 </div>
                 <div class="portfolio-item">
                     <div class="label">Available Cash</div>
@@ -526,38 +526,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for asset in assets %}
                     <tr>
-                        <td class="symbol">BTC</td>
-                        <td>0.005</td>
-                        <td>$103,968.25</td>
-                        <td>$519.84</td>
-                        <td class="negative">-$1,008.77</td>
-                        <td class="negative">-65.99%</td>
+                        <td>{{ asset.symbol }}</td>
+                        <td>{{ asset.quantity }}</td>
                     </tr>
-                    <tr>
-                        <td class="symbol">ETH</td>
-                        <td>1</td>
-                        <td>$2,592.58</td>
-                        <td>$2,592.58</td>
-                        <td class="negative">-$4,850.46</td>
-                        <td class="negative">-65.17%</td>
-                    </tr>
-                    <tr>
-                        <td class="symbol">SOL</td>
-                        <td>5.2</td>
-                        <td>$142.36</td>
-                        <td>$740.27</td>
-                        <td class="positive">+$120.45</td>
-                        <td class="positive">+19.45%</td>
-                    </tr>
-                    <tr>
-                        <td class="symbol">ADA</td>
-                        <td>120</td>
-                        <td>$0.48</td>
-                        <td>$57.60</td>
-                        <td class="negative">-$12.40</td>
-                        <td class="negative">-17.72%</td>
-                    </tr>
+                    {% endfor %}
+
                 </tbody>
             </table>
         </div>
@@ -572,21 +547,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="buyForm">
+                    <form id="buyForm" method="post" action="/api/buy_asset" enctype="application/x-www-form-urlencoded"> <!-- ⚠️ -->
+
                         <div class="mb-3">
                             <label class="form-label">Symbol</label>
-                            <select class="form-control" required>
+
+                            <select class="form-control" name="symbol" required> <!-- ⚠️ -->
                                 <option value="">Select asset...</option>
                                 <option value="BTC">BTC</option>
                                 <option value="ETH">ETH</option>
                                 <option value="SOL">SOL</option>
                                 <option value="ADA">ADA</option>
+
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control" placeholder="0.00" step="0.01" required>
+                            <input type="number" class="form-control" name="quantity" placeholder="0.00" step="0.01" required> <!-- ⚠️ -->
                         </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -668,13 +647,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-     <script>
-        // JavaScript логика (опционально)
-        document.getElementById('buyModal').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Логика отправки данных
-            console.log('Buy form submitted');
-        });
-    </script>
+
 </body>
 </html>

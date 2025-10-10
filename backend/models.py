@@ -42,8 +42,6 @@ class Portfolio(Base):
             'user_id': f"{self.user_id}"
         }
 
-    #def buy_asset(self,  db: Session, symbol: str, quantity: float, price: float):
-
 
 
 
