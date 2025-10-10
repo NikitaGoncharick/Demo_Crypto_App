@@ -533,8 +533,8 @@
                         <td>{{ asset.quantity }}</td>
                         <td>{{ asset.current_price }}$</td>
                         <td>{{ asset.total_value }}$</td>
-                        <td>{{ asset.performance_usd }}</td>
-                        <td>{{ asset.performance_percent }}</td>
+                        <td class="section-title" >{{ asset.performance_usd }}</td>
+                        <td class="section-title" >{{ asset.performance_percent }}</td>
                     </tr>
                     {% endfor %}
 
@@ -589,20 +589,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="sellForm">
+                    <form id="sellForm" method="post" action="/api/sell_asset" enctype="application/x-www-form-urlencoded">  <!-- ⚠️ -->
                         <div class="mb-3">
                             <label class="form-label">Symbol</label>
-                            <select class="form-control" required>
+                            <select class="form-control" name="symbol"  required>
                                 <option value="">Select asset...</option>
-                                <option value="BTC">BTC</option>
-                                <option value="ETH">ETH</option>
-                                <option value="SOL">SOL</option>
-                                <option value="ADA">ADA</option>
+
+                                {% for symbol in portfolio.get_all_assets %}
+                                    <option value="{{ symbol }}">{{ symbol }}</option>
+                                {% endfor %}
+
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control" placeholder="0.00" step="0.01" required>
+                            <input type="number" class="form-control" name="quantity" placeholder="0.00" step="0.01" required>
                         </div>
                     </form>
                 </div>

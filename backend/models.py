@@ -50,6 +50,10 @@ class Portfolio(Base):
            total_val += asset.quantity * current_price
        return total_val
 
+    @property
+    def get_all_assets(self):
+        return [asset.symbol for asset in self.assets]
+
 
 
 class Asset(Base):

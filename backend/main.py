@@ -193,7 +193,7 @@ async def buy_asset(symbol: str = Form(...), quantity: float = Form(...), curren
             price = 10
             portfolio_operation = PortfolioCRUD.buy_asset(db, current_user.id, symbol, quantity, price)
 
-            return JSONResponse({"message": portfolio_operation})
+            return RedirectResponse(url="/user-profile", status_code=303)
         else:
             return JSONResponse({"Error": "Not authenticated"}, status_code=401)
     except Exception as e:
@@ -202,6 +202,18 @@ async def buy_asset(symbol: str = Form(...), quantity: float = Form(...), curren
     except Exception as e:
         # Обрабатываем другие исключения
         return JSONResponse({"detail": str(e)}, status_code=500)
+
+@app.post("/api/sell_asset")
+async def sell_asset(symbol: str = Form(...), quantity: float = Form(...), current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
+    try:
+        if current_user:
+            portfolio_operation = PortfolioCRUD.sell_asset(db, current_user.id, symbol, quantity)
+            return RedirectResponse(url="/user-profile", status_code=303)
+        else:
+            return JSONResponse({"Error": "Not authenticated"}, status_code=401)
+    except Exception as e:
+        return JSONResponse({"detail": e.detail}, status_code=e.status_code)
+
 
 
 # ---------- Обработчик ошибок ----------

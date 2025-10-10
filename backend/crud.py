@@ -85,6 +85,7 @@ class PortfolioCRUD:
         if not portfolio:
             return {"portfolio": None, "assets": [], "total_portfolio_value": 0}
 
+
         assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()  #Отфильтруй активы, которые принадлежат найденному портфелю
 
         # Создаем список активов с дополнительными данными
@@ -99,8 +100,8 @@ class PortfolioCRUD:
             quantity = asset.quantity
             current_price = get_crypto_price(symbol)
             total_value = total_value
-            performance_usd = 999
-            performance_percent = 888
+            performance_usd = "****"
+            performance_percent = "****"
 
             asset_with_data.append({
                 "symbol": symbol,
@@ -177,6 +178,32 @@ class PortfolioCRUD:
         db.refresh(portfolio)
 
         return {"message": "Asset bought successfully"}
+
+
+    @staticmethod
+    def sell_asset(db: Session, user_id: int, symbol: str, quantity: float):
+        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+        if not portfolio:
+            raise HTTPException(status_code=404, detail="Portfolio not found")
+
+        asset = db.query(Asset).filter(Asset.portfolio_id == portfolio.id, Asset.symbol == symbol).first()
+        asset_quantity = asset.quantity
+
+        if asset_quantity < quantity:
+            raise HTTPException(status_code=400, detail="Not enough asset quantity")
+
+
+        value = get_crypto_price(symbol) * quantity
+        portfolio.available_money += value
+        asset.quantity -= quantity
+
+        if asset.quantity == 0:
+            db.delete(asset)
+
+        db.commit()
+        db.refresh(portfolio)
+
+        return {"message": "Asset sold successfully"}
 
 
 
