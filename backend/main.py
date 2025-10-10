@@ -186,6 +186,9 @@ async def add_money(request:Request, amount: float = Form(...), current_user: Us
         return RedirectResponse(url=f"/user-profile?error={str(e)}", status_code=303)
 
 
+@app.post("/api/buy_asset")
+async def buy_asset(db: Session = Depends(get_db), symbol: str = Form(...), quantity: float = Form(...), current_user: User = Depends(check_auth)):
+    print("Message Correct")
 
 
 # ---------- Обработчик ошибок ----------

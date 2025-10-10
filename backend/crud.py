@@ -106,3 +106,48 @@ class PortfolioCRUD:
         return portfolio
 
 
+    @staticmethod
+    def buy_asset(db: Session, user_id: int, symbol: str, quantity: float, price: float):
+        portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first()
+        if not portfolio:
+            raise HTTPException(status_code=404, detail="Portfolio not found")
+
+        # Проверяем достаточно ли денег
+        total_cost = quantity * price
+        if portfolio.available_money < total_cost:
+            raise HTTPException(status_code=400, detail="Not enough money")
+
+        # Ищем существующий актив
+        existing_asset = db.query(Asset).filter(Asset.portfolio_id == portfolio.id, Asset.symbol == symbol).first()
+
+        if existing_asset:
+            existing_asset.quantity += quantity
+        else:
+            new_asset = Asset(
+                portfolio_id=portfolio.id,
+                symbol=symbol,
+                quantity=quantity
+            )
+            db.add(new_asset)
+
+        # Списываем деньги
+        portfolio.available_money -= total_cost
+
+        # Создаем запись о транзакции
+        # transaction = Transaction(
+        #     portfolio_id=portfolio.id,
+        #     transaction_type = "buy",
+        #     symbol=symbol,
+        #     quantity=quantity,
+        #     price=price,
+        #     date= "01.01.01"
+        #     )
+        # db.add(transaction)
+        db.commit()
+
+        print("Asset bought successfully")
+        return {"message": "Asset bought successfully"}
+
+
+
+

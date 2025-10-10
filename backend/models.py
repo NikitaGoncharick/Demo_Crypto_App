@@ -28,6 +28,7 @@ class Portfolio(Base):
     assets = relationship("Asset", back_populates="portfolio")
     transactions = relationship("Transaction", back_populates="portfolio")
 
+
     #---Прописываем методы внутри модели (самый правильный подход)
     @property #декоратор, который превращает метод в атрибут (свойство).
     def total_value_display(self):
@@ -40,7 +41,12 @@ class Portfolio(Base):
             'total_added_money': f"{self.total_added_money:.2f}",
             'user_id': f"{self.user_id}"
         }
-    #---
+
+    #def buy_asset(self,  db: Session, symbol: str, quantity: float, price: float):
+
+
+
+
 
 class Asset(Base):
     __tablename__ = "assets"
