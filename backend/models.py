@@ -3,8 +3,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.orm import relationship
-
 from  database import Base
+from crypto_service import get_crypto_price
 
 class User(Base):
     __tablename__ = "users"
@@ -42,7 +42,13 @@ class Portfolio(Base):
             'user_id': f"{self.user_id}"
         }
 
-
+    @property
+    def total_portfolio_value(self):
+       total_val = 0
+       for asset in self.assets:
+           current_price = get_crypto_price(asset.symbol)
+           total_val += asset.quantity * current_price
+       return total_val
 
 
 

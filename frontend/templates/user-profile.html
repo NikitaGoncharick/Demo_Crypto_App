@@ -100,7 +100,7 @@
             background: var(--secondary-bg);
             border-radius: 4px;
             border: 1px solid rgba(0, 255, 0, 0.66);
-            padding: 20px;
+            padding: 10px;
             margin-bottom: 20px;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
             position: relative;
@@ -176,7 +176,8 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            margin-top: 10px;
         }
 
         .btn-action {
@@ -481,15 +482,15 @@
             <div class="portfolio-grid">
                 <div class="portfolio-item main">
                     <div class="label">Total Value</div>
-                    <div class="value-large" id="total-value">none</div>
+                    <div class="value-large" id="total-value">{{ portfolio.total_portfolio_value }}$</div>
                 </div>
                 <div class="portfolio-item">
                     <div class="label">Available Cash</div>
-                    <div class="value-medium">{{ portfolio.get_display_data.avaliable_money }}</div>
+                    <div class="value-medium">{{ portfolio.get_display_data.avaliable_money }}$</div>
                 </div>
                 <div class="portfolio-item">
-                    <div class="label">Total Added</div>
-                    <div class="value-medium">{{ portfolio.get_display_data.total_added_money }}</div>
+                    <div class="label">Total Money Added</div>
+                    <div class="value-medium">{{ portfolio.get_display_data.total_added_money }}$</div>
                 </div>
                 <div class="portfolio-item">
                     <div class="label">Performance</div>
@@ -530,6 +531,10 @@
                     <tr>
                         <td>{{ asset.symbol }}</td>
                         <td>{{ asset.quantity }}</td>
+                        <td>{{ asset.current_price }}$</td>
+                        <td>{{ asset.total_value }}$</td>
+                        <td>{{ asset.performance_usd }}</td>
+                        <td>{{ asset.performance_percent }}</td>
                     </tr>
                     {% endfor %}
 

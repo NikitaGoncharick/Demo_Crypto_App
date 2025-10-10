@@ -6,6 +6,7 @@ from sqlalchemy.testing.suite.test_reflection import users
 
 from models import User, Portfolio, Asset, Transaction
 from schemas import UserCreate, AddMoney, TradeAsset
+from crypto_service import get_crypto_price
 #from auth import verify_token
 
 
@@ -82,17 +83,22 @@ class PortfolioCRUD:
 
         portfolio = db.query(Portfolio).filter(Portfolio.user_id == user_id).first() #из таблицы portfolio Отфильтруй только те записи, где user_id равен переданному user_id
         if not portfolio:
-            return None
+            return {"portfolio": None, "assets": [], "total_portfolio_value": 0}
 
         assets = db.query(Asset).filter(Asset.portfolio_id == portfolio.id).all()  #Отфильтруй активы, которые принадлежат найденному портфелю
 
         # Создаем список активов с дополнительными данными
         asset_with_data = []
+
         for asset in assets:
+            current_price = get_crypto_price(asset.symbol)
+            total_value = asset.quantity * current_price
+
+
             symbol = asset.symbol
             quantity = asset.quantity
-            current_price = 12
-            total_value = asset.quantity * current_price
+            current_price = get_crypto_price(symbol)
+            total_value = total_value
             performance_usd = 999
             performance_percent = 888
 
