@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse #"упаковка" ответа в �
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
 from fastapi.templating import Jinja2Templates #Превращает HTML-шаблоны в готовые HTML-страницы с подставленными данными.
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # PasswordBearer - Требует JWT токен в заголовках, PasswordReques - Автоматически читает данные формы, Ожидает поля username и password
+from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -199,6 +200,14 @@ async def sell_asset(symbol: str = Form(...), quantity: float = Form(...), curre
         return JSONResponse({"detail": e.detail}, status_code=e.status_code)
 
 
+@app.get("/calculate_total", response_class=PlainTextResponse)
+async def calculate_total(symbol: str, quantity: float = 0):
+    if not symbol or quantity <= 0:
+        return "0.00$"
+
+    price = get_crypto_price(symbol)
+    total = quantity * price
+    return f"{total:.2f}$"
 
 # ---------- Обработчик ошибок ----------
 @app.exception_handler(HTTPException)

@@ -563,18 +563,19 @@
                         <div class="mb-3">
                             <label class="form-label">Symbol</label>
 
-                            <select class="form-control" name="symbol" required> <!-- ⚠️ -->
+                            <select class="form-control" name="symbol" required>
                                 <option value="">Select asset...</option>
-                                <option value="BTC">BTC</option>
-                                <option value="ETH">ETH</option>
-                                <option value="SOL">SOL</option>
-                                <option value="ADA">ADA</option>
-
+                                {% for symbol in ["BTC", "ETH", "SOL", "ADA", "DOT", "LTC"] %}
+                                <option value="{{ symbol }}">{{ symbol }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
                             <input type="number" class="form-control" name="quantity" placeholder="0.00" step="0.01" required> <!-- ⚠️ -->
+                            <div class="fs-5 fw-bold">
+                                <small class="text-warning">Total: <span id="totalAmount" >0.00$</span></small>
+                            </div>
                         </div>
 
                     </form>
@@ -659,6 +660,40 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // скрипт для расчета общей суммы
+    document.addEventListener('DOMContentLoaded', function() {
+        const symbolSelect = document.querySelector('#buyModal select[name="symbol"]');
+        const quantityInput = document.querySelector('#buyModal input[name="quantity"]');
+        const totalSpan = document.querySelector('#buyModal #totalAmount');
+
+        function calculateTotal() {
+            const symbol = symbolSelect.value;
+            const quantity = parseFloat(quantityInput.value) || 0;
+
+            if (!symbol || quantity <= 0) {
+                totalSpan.textContent = '0.00$';
+                return;
+            }
+
+            // Запрос к твоему эндпоинту
+            fetch(`/calculate_total?symbol=${symbol}&quantity=${quantity}`)
+                .then(response => response.text())
+                .then(total => {
+                    totalSpan.textContent = total;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    totalSpan.textContent = 'Error';
+                });
+        }
+
+        // Слушаем изменения в полях
+        symbolSelect.addEventListener('change', calculateTotal);
+        quantityInput.addEventListener('input', calculateTotal);
+    });
+</script>
+
 
 </body>
 </html>
