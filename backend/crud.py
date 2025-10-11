@@ -95,22 +95,13 @@ class PortfolioCRUD:
             current_price = get_crypto_price(asset.symbol)
             total_value = asset.quantity * current_price
 
-
-            symbol = asset.symbol
-            quantity = asset.quantity
-            current_price = get_crypto_price(symbol)
-            total_value = total_value
-            performance_usd = "****"
-            performance_percent = "****"
-
             asset_with_data.append({
-                "symbol": symbol,
-                "quantity": quantity,
+                "symbol": asset.symbol,
+                "quantity": asset.quantity,
                 "current_price": current_price,
                 "total_value": total_value,
-                "performance_usd": performance_usd,
-                "performance_percent": performance_percent
-
+                "performance_usd":  "****",
+                "performance_percent":  "****"
             })
 
 

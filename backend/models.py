@@ -51,6 +51,11 @@ class Portfolio(Base):
        return total_val
 
     @property
+    def total_portfolio_value_display(self):
+        """Возвращает отформатированное значение с разделителями"""
+        return f"{self.total_portfolio_value:,.2f}"
+
+    @property
     def get_all_assets(self):
         return [asset.symbol for asset in self.assets]
 
