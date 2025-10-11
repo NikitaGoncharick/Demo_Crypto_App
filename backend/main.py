@@ -164,6 +164,16 @@ async def user_profile(request: Request, current_user: User = Depends(check_auth
                               "user": current_user
                               })
 
+@app.get("/payment")
+async def payment(request: Request, amount: float, current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
+    if not current_user:
+        return RedirectResponse(url="/", status_code=302)
+
+    return templates.TemplateResponse(
+        "payment.html", {"request": request,
+                         "amount": amount,
+                         "user": current_user})
+
 # --- API endpoint приема данных ----
 # api/ = здесь живут endpoints для данных ( user не увидит отображения названия )
 # Отдельный адрес на сервере для приема данных

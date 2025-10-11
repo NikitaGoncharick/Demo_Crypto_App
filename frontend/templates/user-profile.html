@@ -624,7 +624,7 @@
                 </div>
                 <div class="modal-body">
                      <!-- method="post" - отправляй данные как письмо | action="/api/add_money" - адрес | enctype - упаковывай данные в специальный формат -->
-                    <form id="addMoneyForm" method="post" action="/api/add_money" enctype="application/x-www-form-urlencoded">
+                    <form id="addMoneyForm" method="get" action="/payment" enctype="application/x-www-form-urlencoded">
 
                         <div class="mb-3">
                             <label class="form-label">Amount ($)</label>
@@ -634,7 +634,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
-                            <select class="form-control"  id="paymentMethod" required> <!-- id = "паспорт" элемента для JavaScript/CSS -->
+                            <select class="form-control" required> <!-- id = "паспорт" элемента для JavaScript/CSS -->
                                 <option value="">Select method...</option>
                                 <option value="card">Credit Card</option>
                                 <option value="crypto">Crypto Transfer</option>
