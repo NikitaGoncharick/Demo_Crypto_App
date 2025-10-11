@@ -14,7 +14,7 @@
             --text-primary: #e0e0ff;
             --text-secondary: #a0a0c0;
             --border-color: #1f591f;
-            --danger: #ff3366;
+            --danger: #e60404;
             --warning: #ffcc00;
         }
 
@@ -219,11 +219,11 @@
 
         /*  */
         .btn-add-money {
-            color: #0088ff;
-            border-color: #0088ff;
+            color: #fffb00;
+            border-color: #ffd500;
         }
         .btn-add-money:hover {
-            background: #0088ff;
+            background: #fff200;
             color: var(--primary-bg);
         }
         /*  */
@@ -370,6 +370,12 @@
             border-radius: 4px;
         }
 
+        /* Или более специфично для модальных окон */
+        .modal .form-control::placeholder {
+            color: #00aa00;
+            opacity: 0.7;
+        }
+
         .form-control:focus {
             background: var(--primary-bg);
             border-color: var(--accent-color);
@@ -494,7 +500,7 @@
                 </div>
                 <div class="portfolio-item">
                     <div class="label">Performance</div>
-                    <div class="value-medium positive">$126.77 (+0.00%)</div>
+                    <div class="value-medium positive">*****</div>
                 </div>
             </div>
         </div>
@@ -585,7 +591,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">🔴 Sell Asset</h5>
+                    <h5 class="modal-title">Sell Asset</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -619,7 +625,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">💰 Add Money</h5>
+                    <h5 class="modal-title">Add Money</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
