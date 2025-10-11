@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 import requests
 from jose import jwt, ExpiredSignatureError
 
+from backend.schemas import AddMoney
 from database import get_db, engine
 from models import Base, User
 from schemas import UserCreate
@@ -93,7 +94,6 @@ async def login(response: Response, #для передачи данных с с�
     return redirect #Браузер получает ОДИН ответ с двумя инструкциями: редирект + куки
 
 
-
 @app.post("/logout")
 def logout():
     redirect = RedirectResponse(url="/", status_code=303)
@@ -121,31 +121,6 @@ async def check_auth (request: Request, db: Session = Depends(get_db)) -> User: 
     # ВАЖНО: выбрасываем исключение, а не просто печатаем!
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
-#------
-@app.get("/crypto/{symbol}")
-async def get_crypto_data(symbol: str, db: Session = Depends(get_db)):
-    price = get_crypto_price(symbol)
-    return {"symbol": symbol, "price": f"{price} USD"}
-
-#------
-
-@app.get("/user/all", response_model=list[UserCreate])
-async def get_all_users(db: Session = Depends(get_db)):
-    return UserCRUD.get_all_users(db)
-
-@app.get("/user/{user_id}", response_model=UserCreate)
-async def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = UserCRUD.get_user(db, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-@app.delete("/user/delete/{user_id}")
-async def delete_user(user_id: int, db: Session = Depends(get_db)):
-    if not user_id:
-        raise HTTPException(status_code=400, detail="User ID is required")
-    return UserCRUD.delete_user(db, user_id)
-
 
 
 # --- Защищенные эндпоинты ----
@@ -181,13 +156,12 @@ async def payment(request: Request, amount: float, current_user: User = Depends(
 # Без endpoint'а форма будет пытаться отправить данные на текущую страницу, которая не умеет обрабатывать добавление денег.
 
 @app.post("/api/add_money")
-async def add_money(request:Request, amount: float = Form(...), current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
+async def add_money(amount: float = Form(...), current_user: User = Depends(check_auth), db: Session = Depends(get_db)):
     try:
-        # 1. Обновляем деньги в базе
-        portfolio_operation = PortfolioCRUD.add_money_to_portfolio(db, current_user.id, amount)
+        added_money_data = AddMoney(amount = amount) # ✅ ← Pydantic валидация
+        portfolio_operation = PortfolioCRUD.add_money_to_portfolio(db, current_user.id, added_money_data.amount) # ✅ передача чистых данных
 
         if portfolio_operation:
-            # ПРОСТО ПЕРЕНАПРАВЛЯЕМ на страницу профиля
             return RedirectResponse(url="/user-profile", status_code=303)
         else:
             return RedirectResponse(url="/user-profile", status_code=303)
@@ -239,3 +213,28 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+
+    # @app.get("/user/all", response_model=list[UserCreate])
+    # async def get_all_users(db: Session = Depends(get_db)):
+    #     return UserCRUD.get_all_users(db)
+    #
+    #
+    # @app.get("/user/{user_id}", response_model=UserCreate)
+    # async def get_user(user_id: int, db: Session = Depends(get_db)):
+    #     user = UserCRUD.get_user(db, user_id)
+    #     if not user:
+    #         raise HTTPException(status_code=404, detail="User not found")
+    #     return user
+    #
+    #
+    # @app.delete("/user/delete/{user_id}")
+    # async def delete_user(user_id: int, db: Session = Depends(get_db)):
+    #     if not user_id:
+    #         raise HTTPException(status_code=400, detail="User ID is required")
+    #     return UserCRUD.delete_user(db, user_id)
+
+    # @app.get("/crypto/{symbol}")
+    # async def get_crypto_data(symbol: str, db: Session = Depends(get_db)):
+    #     price = get_crypto_price(symbol)
+    #     return {"symbol": symbol, "price": f"{price} USD"}

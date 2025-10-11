@@ -32,7 +32,7 @@ class Portfolio(Base):
     #---Прописываем методы внутри модели (самый правильный подход)
     @property #декоратор, который превращает метод в атрибут (свойство).
     def total_value_display(self):
-        return f"{self.available_money:.2f}" #Отформатированное значение для отображения
+        return f"{self.available_money:.2f}"
 
     @property
     def get_display_data(self):
@@ -52,8 +52,7 @@ class Portfolio(Base):
 
     @property
     def total_portfolio_value_display(self):
-        """Возвращает отформатированное значение с разделителями"""
-        return f"{self.total_portfolio_value:,.2f}"
+        return f"{self.total_portfolio_value:,.2f}" #Возвращает отформатированное значение с разделителями
 
     @property
     def get_all_assets(self):

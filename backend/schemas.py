@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     password: str
     email: str
 
+# Валидация введенной суммы
 class AddMoney(BaseModel):
     amount: float
 
