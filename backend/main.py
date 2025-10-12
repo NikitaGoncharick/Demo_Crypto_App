@@ -2,7 +2,7 @@
 # Все что связано с HTTP (токены, куки, headers) - в эндпоинтах.
 
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException, Depends, Form, Response #(Response для создания cookie)
+from fastapi import FastAPI, Request, HTTPException, Depends, Form, Response #(Response для создания cookie) | request - это вся информация о текущем HTTP запросе от пользователя.
 from fastapi.responses import RedirectResponse #Чтобы перенаправлять на другую страницу вместо выброса ошибки
 from fastapi.responses import JSONResponse #"упаковка" ответа в понятный для JavaScript формат
 from fastapi.middleware.cors import CORSMiddleware #Разрешает браузеру делать запросы к вашему API с других доменов.
